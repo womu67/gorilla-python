@@ -175,10 +175,14 @@ class Game:
 
     def throw_banana(self):
         if self.current_player == 1:
+            # ANIMATION STARTEN FÜR PLAYER 1
+            self.gorilla1.start_throw_animation()
             x, y = self.gorilla1.get_throw_position()
             self.banana = Banana(x, y, self.gorilla1.angle, self.gorilla1.velocity, 1, 1)
             print(f"🎯 Player 1 wirft von Position ({x:.1f}, {y:.1f})")
         else:
+            # ANIMATION STARTEN FÜR PLAYER 2
+            self.gorilla2.start_throw_animation()
             x, y = self.gorilla2.get_throw_position()
             self.banana = Banana(x, y, self.gorilla2.angle, self.gorilla2.velocity, 2, 2)
             print(f"🎯 Player 2 wirft von Position ({x:.1f}, {y:.1f})")
@@ -188,6 +192,8 @@ class Game:
 
         self.waiting_for_input = False
         print("🍌 Banane wurde geworfen...")
+
+
 
     # In der update-Methode:
     def update(self):
