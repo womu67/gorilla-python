@@ -64,7 +64,7 @@ class Banana:
         return False, None
 
     def check_simple_collision(self, buildings, gorilla1, gorilla2):
-        """Vereinfachte Kollisionsprüfung nur mit aktuellem Punkt"""
+        """Kollisionsprüfung die Krater als Löcher berücksichtigt"""
         # Warte ein paar Frames, um Selbstkollision zu vermeiden
         if self.frames_active < 8:
             return None
@@ -74,14 +74,45 @@ class Banana:
         if gorilla_collision:
             return gorilla_collision
 
-        # Prüfe Gebäude-Kollision
+        # Prüfe Gebäude-Kollision - ABER IGNORIERE BEREICHE MIT KRATERN
         point_rect = pygame.Rect(self.x - 5, self.y - 5, 10, 10)
 
         for building in buildings:
-            if building["rect"].colliderect(point_rect):
-                return "building"
+            building_rect = building["rect"]
+
+            # Prüfe zuerst ob Punkt im Gebäude ist
+            if building_rect.colliderect(point_rect):
+                # Prüfe ob Punkt in einem Krater liegt (dann KEINE Kollision)
+                in_crater = False
+                for crater in building["craters"]:
+                    distance = math.sqrt((self.x - crater.x) ** 2 + (self.y - crater.y) ** 2)
+                    if distance <= crater.radius:
+                        in_crater = True
+                        break
+
+                # Nur Kollision wenn nicht in einem Krater
+                if not in_crater:
+                    return "building"
 
         return None
+    def _check_line_building_collision(self, x1, y1, x2, y2, building_rect):
+        """Prüft Kollision zwischen Liniensegment und Gebäuderechteck"""
+        # Vereinfachte Prüfung: Teile die Linie in mehrere Punkte auf
+        steps = 10  # Anzahl der Zwischenpunkte
+        for i in range(steps + 1):
+            t = i / steps
+            check_x = x1 + (x2 - x1) * t
+            check_y = y1 + (y2 - y1) * t
+
+            # Prüfe ob dieser Punkt im Gebäude ist
+            point_rect = pygame.Rect(check_x - 4, check_y - 4, 8, 8)
+            if building_rect.colliderect(point_rect):
+                # Aktualisiere die Position für genaue Kollisionserkennung
+                self.x = check_x
+                self.y = check_y
+                return True
+
+        return False
 
     def check_gorilla_collision(self, gorilla1, gorilla2):
         point_rect = pygame.Rect(self.x - 8, self.y - 8, 16, 16)

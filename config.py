@@ -21,10 +21,9 @@ CRATER_COLORS = [
     (50, 50, 50),    # Fast schwarz
 ]
 
-# Krater-Einstellungen - VERLÄNGERTE DAUER
-CRATER_MAX_RADIUS = 20
-# In config.py - für permanente Krater
-CRATER_DURATION = 1000  # 0 = unendlich, Krater bleiben bis zum Rundenende
+# Krater-Einstellungen - PERMANENT
+CRATER_DURATION = 0  # 0 = unendlich, Krater bleiben bis zum Rundenende
+CRATER_MAX_RADIUS = 25  # Etwas größere Krater
 
 # Player Controls
 PLAYER1_CONTROLS = {

@@ -56,8 +56,8 @@ class Game:
             print(f"🎯 Runde {self.round_count}: Player 2 (BLAU) beginnt!")
 
     def update(self):
-        # Krater aktualisieren
-        update_building_craters(self.buildings)
+        # KRATER-UPDATE ENTFERNEN - sie sind jetzt permanent
+        # update_building_craters(self.buildings)  # DIESE ZEILE AUSKOMMENTIEREN ODER LÖSCHEN
 
         if self.banana and self.banana.active:
             collision_occurred, collision_type = self.banana.update(

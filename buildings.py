@@ -124,40 +124,47 @@ def add_crater_to_building(buildings, impact_x, impact_y):
 
 
 def update_building_craters(buildings):
-    """Aktualisiert alle Krater auf allen Gebäuden"""
-    for building in buildings:
-        building["craters"] = [crater for crater in building["craters"] if crater.update()]
+    """Krater werden nicht mehr upgedatet - sie sind permanent"""
+    # Keine Aktion mehr - Krater bleiben permanent
+    pass
 
 
 def draw_buildings(screen, buildings):
     total_craters = 0
-    last_crater_info = None
 
     for b in buildings:
-        # Gebäude zeichnen
+        # Gebäude ohne Krater zeichnen
         pygame.draw.rect(screen, b["color"], b["rect"])
 
-        # Fenster zeichnen
+        # Fenster zeichnen (vor den Kratern)
         for w in b["windows"]:
             pygame.draw.rect(screen, (255, 255, 100), w)
 
-        # Krater zeichnen (über den Fenstern)
-        for crater in b["craters"]:
-            crater.draw(screen)
-            total_craters += 1
-            # Merke dir den letzten Krater für die Debug-Anzeige
-            last_crater_info = (crater.x, crater.y)
+        # Krater als "Löcher" zeichnen - wir zeichnen sie nicht, sie sind Löcher
+        total_craters += len(b["craters"])
 
-    # Debug-Info anzeigen (nur wenn Krater vorhanden sind)
+    # Jetzt zeichnen wir die Krater-Ränder für bessere Sichtbarkeit
+    for b in buildings:
+        for crater in b["craters"]:
+            _draw_crater_outline(screen, crater)
+
+    # Debug-Info anzeigen
     if total_craters > 0:
         debug_text = f"Krater: {total_craters}"
         font = pygame.font.SysFont(None, 24)
         text_surface = font.render(debug_text, True, (255, 255, 255))
         screen.blit(text_surface, (10, HEIGHT - 30))
 
-        # Zeige auch Krater-Position an (wenn verfügbar)
-        if last_crater_info:
-            crater_x, crater_y = last_crater_info
-            crater_pos_text = f"Letzter Krater bei ({crater_x:.0f}, {crater_y:.0f})"
-            pos_surface = font.render(crater_pos_text, True, (255, 255, 255))
-            screen.blit(pos_surface, (10, HEIGHT - 60))
+
+def _draw_crater_outline(screen, crater):
+    """Zeichnet nur den Rand des Kraters für bessere Sichtbarkeit"""
+    try:
+        # Krater-Rand (dunkler Ring)
+        pygame.draw.circle(screen, (40, 40, 40), (int(crater.x), int(crater.y)), crater.radius, 3)
+
+        # Innerer Schatten für Tiefenwirkung
+        inner_radius = max(2, crater.radius - 4)
+        pygame.draw.circle(screen, (30, 30, 30), (int(crater.x), int(crater.y)), inner_radius, 2)
+
+    except Exception as e:
+        print(f"❌ Fehler beim Zeichnen des Krater-Rands: {e}")
