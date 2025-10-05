@@ -137,7 +137,212 @@
         </div>
     </div>
 
+    <script><!DOCTYPE html>
+<html>
+<head>
+    <title>Gorillas HTML5</title>
+    <style>
+        body { margin: 0; padding: 20px; background: #87CEEB; text-align: center; }
+        canvas { border: 2px solid #333; background: #87CEEB; }
+        .controls { margin: 10px; }
+        button { padding: 10px; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h1>🦍 Gorillas HTML5</h1>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+
+    <div class="controls">
+        <div>
+            <strong>Player 1:</strong>
+            <button onclick="changeAngle(1, -5)">W ⬆</button>
+            <button onclick="changeAngle(1, 5)">S ⬇</button>
+            <button onclick="changeVelocity(1, 1)">D ➡</button>
+            <button onclick="changeVelocity(1, -1)">A ⬅</button>
+            <button onclick="throwBanana(1)">LEERTASTE Werfen</button>
+        </div>
+        <div>
+            <strong>Player 2:</strong>
+            <button onclick="changeAngle(2, -5)">Pfeil ⬆</button>
+            <button onclick="changeAngle(2, 5)">Pfeil ⬇</button>
+            <button onclick="changeVelocity(2, 1)">Pfeil ➡</button>
+            <button onclick="changeVelocity(2, -1)">Pfeil ⬅</button>
+            <button onclick="throwBanana(2)">ENTER Werfen</button>
+        </div>
+    </div>
+
     <script>
+        // Spiel Variablen
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let buildings = [];
+        let gorilla1 = { x: 0, y: 0, angle: 45, velocity: 25, color: 'red' };
+        let gorilla2 = { x: 0, y: 0, angle: 45, velocity: 25, color: 'blue' };
+        let banana = null;
+        let currentPlayer = 1;
+        let wind = 0;
+
+        // Gebäude generieren
+        function generateBuildings() {
+            buildings = [];
+            const buildingWidth = 60;
+            const numBuildings = Math.ceil(canvas.width / buildingWidth);
+
+            for (let i = 0; i < numBuildings; i++) {
+                const x = i * buildingWidth;
+                const height = Math.random() * 200 + 100;
+                buildings.push({
+                    x: x,
+                    y: canvas.height - height,
+                    width: buildingWidth,
+                    height: height,
+                    color: `rgb(${100 + Math.random() * 50}, ${100 + Math.random() * 50}, ${100 + Math.random() * 50})`
+                });
+            }
+
+            // Gorilla Positionen setzen
+            gorilla1.x = buildings[0].x + buildings[0].width / 2;
+            gorilla1.y = buildings[0].y - 20;
+
+            gorilla2.x = buildings[buildings.length - 1].x + buildings[buildings.length - 1].width / 2;
+            gorilla2.y = buildings[buildings.length - 1].y - 20;
+        }
+
+        // Zeichne Gebäude
+        function drawBuildings() {
+            buildings.forEach(building => {
+                ctx.fillStyle = building.color;
+                ctx.fillRect(building.x, building.y, building.width, building.height);
+
+                // Fenster
+                ctx.fillStyle = 'yellow';
+                for (let wy = building.y + 10; wy < building.y + building.height - 10; wy += 20) {
+                    for (let wx = building.x + 10; wx < building.x + building.width - 10; wx += 15) {
+                        if (Math.random() > 0.3) {
+                            ctx.fillRect(wx, wy, 5, 8);
+                        }
+                    }
+                }
+            });
+        }
+
+        // Zeichne Gorillas
+        function drawGorillas() {
+            // Gorilla 1
+            ctx.fillStyle = gorilla1.color;
+            ctx.beginPath();
+            ctx.arc(gorilla1.x, gorilla1.y, 20, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Gorilla 2
+            ctx.fillStyle = gorilla2.color;
+            ctx.beginPath();
+            ctx.arc(gorilla2.x, gorilla2.y, 20, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // Bananen-Physik
+        function updateBanana() {
+            if (!banana) return;
+
+            banana.velX += wind * 0.05;
+            banana.velY += 0.5; // Gravitation
+            banana.x += banana.velX;
+            banana.y += banana.velY;
+
+            // Kollisionsprüfung
+            if (banana.y > canvas.height) {
+                banana = null;
+                currentPlayer = 3 - currentPlayer; // Spielerwechsel
+                wind = (Math.random() - 0.5) * 4;
+            }
+        }
+
+        // Zeichne Banane
+        function drawBanana() {
+            if (!banana) return;
+
+            ctx.fillStyle = 'yellow';
+            ctx.beginPath();
+            ctx.arc(banana.x, banana.y, 5, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // Steuerungs-Funktionen
+        function changeAngle(player, change) {
+            if (player === 1) {
+                gorilla1.angle = Math.max(0, Math.min(90, gorilla1.angle + change));
+            } else {
+                gorilla2.angle = Math.max(0, Math.min(90, gorilla2.angle + change));
+            }
+        }
+
+        function changeVelocity(player, change) {
+            if (player === 1) {
+                gorilla1.velocity = Math.max(10, Math.min(80, gorilla1.velocity + change));
+            } else {
+                gorilla2.velocity = Math.max(10, Math.min(80, gorilla2.velocity + change));
+            }
+        }
+
+        function throwBanana(player) {
+            if (banana) return;
+
+            const gorilla = player === 1 ? gorilla1 : gorilla2;
+            const direction = player === 1 ? 1 : -1;
+
+            const angleRad = gorilla.angle * Math.PI / 180;
+            banana = {
+                x: gorilla.x,
+                y: gorilla.y,
+                velX: direction * gorilla.velocity * Math.cos(angleRad),
+                velY: -gorilla.velocity * Math.sin(angleRad)
+            };
+        }
+
+        // Tastatur-Steuerung
+        document.addEventListener('keydown', (e) => {
+            if (currentPlayer === 1) {
+                if (e.key === 'w') changeAngle(1, -5);
+                if (e.key === 's') changeAngle(1, 5);
+                if (e.key === 'd') changeVelocity(1, 1);
+                if (e.key === 'a') changeVelocity(1, -1);
+                if (e.key === ' ') throwBanana(1);
+            } else {
+                if (e.key === 'ArrowUp') changeAngle(2, -5);
+                if (e.key === 'ArrowDown') changeAngle(2, 5);
+                if (e.key === 'ArrowRight') changeVelocity(2, 1);
+                if (e.key === 'ArrowLeft') changeVelocity(2, -1);
+                if (e.key === 'Enter') throwBanana(2);
+            }
+        });
+
+        // Hauptspiel-Schleife
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            drawBuildings();
+            drawGorillas();
+            updateBanana();
+            drawBanana();
+
+            // UI anzeigen
+            ctx.fillStyle = 'black';
+            ctx.font = '16px Arial';
+            ctx.fillText(`Player ${currentPlayer} am Zug | Winkel: ${currentPlayer === 1 ? gorilla1.angle : gorilla2.angle}° | Geschwindigkeit: ${currentPlayer === 1 ? gorilla1.velocity : gorilla2.velocity}`, 10, 30);
+            ctx.fillText(`Wind: ${wind.toFixed(1)}`, 10, 50);
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Spiel starten
+        generateBuildings();
+        wind = (Math.random() - 0.5) * 4;
+        gameLoop();
+    </script>
+</body>
+</html>
         // Zeige die aktuelle IP-Adresse
         document.getElementById('ip-address').textContent = window.location.hostname;
 
