@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import pygame
 import sys
 from game_logic import Game
@@ -6,36 +7,36 @@ from config import FPS, WIDTH, HEIGHT
 
 
 def main():
-    print("🚀 Starte Gorillas Spiel...")
+    print("Starte Gorillas Spiel...")
 
     try:
         # Pygame initialisieren
         pygame.init()
-        print("✅ Pygame initialisiert")
+        print("Pygame initialisiert")
 
         # Display mit fester Auflösung setzen
         screen = pygame.display.set_mode((WIDTH, HEIGHT))
         pygame.display.set_caption("Gorillas Python")
-        print(f"📺 Display erstellt: {WIDTH}x{HEIGHT}")
+        print(f"Display erstellt: {WIDTH}x{HEIGHT}")
 
         # Spiel erstellen
         game = Game()
-        print("🎮 Spielinstanz erstellt")
+        print("Spielinstanz erstellt")
 
         print("\n" + "=" * 60)
-        print("🎯 GORILLAS SPIEL GESTARTET!")
+        print("GORILLAS SPIEL GESTARTET!")
         print("=" * 60)
-        print("👤 PLAYER 1 (LINKS, ROT):")
-        print("   W/S - Winkel ändern (0-90°)")
-        print("   A/D - Geschwindigkeit ändern (10-80)")
+        print("PLAYER 1 (LINKS, ROT):")
+        print("   W/S - Winkel aendern (0-90°)")
+        print("   A/D - Geschwindigkeit aendern (10-80)")
         print("   LEERTASTE - Werfen")
         print("")
-        print("👤 PLAYER 2 (RECHTS, BLAU):")
-        print("   PFEIL HOCH/RUNTER - Winkel ändern (0-90°)")
-        print("   PFEIL LINKS/RECHTS - Geschwindigkeit ändern (10-80)")
+        print("PLAYER 2 (RECHTS, BLAU):")
+        print("   PFEIL HOCH/RUNTER - Winkel aendern (0-90°)")
+        print("   PFEIL LINKS/RECHTS - Geschwindigkeit aendern (10-80)")
         print("   ENTER - Werfen")
         print("=" * 60)
-        print("🎲 Das Spiel läuft jetzt... Viel Spaß!")
+        print("Das Spiel laeuft jetzt... Viel Spass!")
 
         # Hauptspielschleife
         running = True
@@ -48,7 +49,7 @@ def main():
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
-                    print("👋 Spiel beendet")
+                    print("Spiel beendet")
                 else:
                     game.handle_input(event)
 
@@ -61,21 +62,21 @@ def main():
             # FPS kontrollieren
             game.clock.tick(FPS)
 
-            # Debug: Zeige alle 500 Frames dass das Spiel läuft
+            # Debug: Zeige alle 500 Frames dass das Spiel laeuft
             if frame_count % 500 == 0:
-                print(f"🔄 Spiel läuft... Frame {frame_count}, Aktiver Spieler: {game.current_player}")
+                print(f"Spiel laeuft... Frame {frame_count}, Aktiver Spieler: {game.current_player}")
 
     except Exception as e:
-        print(f"❌ KRITISCHER FEHLER: {e}")
+        print(f"KRITISCHER FEHLER: {e}")
         import traceback
         traceback.print_exc()
 
     finally:
-        print("🧹 Räume auf...")
+        print("Raeume auf...")
         pygame.quit()
         sys.exit()
 
 
 if __name__ == "__main__":
     main()
-    print("🏁 Programm beendet")
+    print("Programm beendet")
